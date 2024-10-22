@@ -43,6 +43,14 @@ The compressor has been tested with various models, including MobileNetV2, ResNe
   python main.py --device cuda --mode 1 --data-set CIFAR --data_path ./ --model mobilenetv2_x1_0 --pretrained ./cifar100_mobilenetv2_x1_0.pt --pruning_ratio 0.6 --global_pruning --weight_decay 0.0005 --lr 1e-6 --qat_lr 1e-6 --qat_epochs 10 --epochs 100 --do_KD
   ```
 
+  ## MobileNetv2 Result
+| Model Name                     | Top-1 Accuracy (%) | Top-5 Accuracy (%) | Latency (ms) | Model Size (MB) |
+|--------------------------------|--------------------|--------------------|--------------|-----------------|
+| ONNX Mobilenetv2 Compressed    | 73.27              | 92.38              | 0.9013       | 1.37            |
+| Torch Mobilenetv2 Pruned       | 73.83              | 92.69              | 3.5839       | 4.70            |
+| Torch Mobilenetv2 Original     | 73.51              | 92.38              | 5.1606       | 9.63            |
+
+
 
   
 
