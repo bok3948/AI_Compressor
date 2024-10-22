@@ -2,8 +2,6 @@ import os
 
 import torch
 
-import tensorflow as tf
-
 from timm import create_model
 from huggingface_hub import hf_hub_download
 from transformers import AutoModel

@@ -19,7 +19,7 @@ from benchmark import Benchmark
 def get_args_parser():
     parser = argparse.ArgumentParser(description='AI Compression', add_help=False)
 
-    parser.add_argument('--mode', default=1, choices=[0, 1], help='mode 0: post-training setting(pruning + PTQ) (NO retrain, No train data, with calibration dataset), mode 1: retraining setting(pruning + retraining + QAT) (retraining, with train dataset)')
+    parser.add_argument('--mode', default=1, choices=[0, 1], type=int, help='mode 0: post-training setting(pruning + PTQ) (NO retrain, No train data, with calibration dataset), mode 1: retraining setting(pruning + retraining + QAT) (retraining, with train dataset)')
 
     #setting
     parser.add_argument('--device_type', default='nvidia_gpu', choices=['default_cpu', 'nvidia_gpu', 'intel_cpu'], help='hardware acceleration for onnxruntime')

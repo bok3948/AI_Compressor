@@ -2,9 +2,6 @@ import subprocess
 
 import torch
 
-import tensorflow as tf
-import tf2onnx
-
 def torch_onnx_convert(model, model_name="convnext_small", dummy_size=(1, 3, 224, 224), save_dir="./" ):
     model.eval()
     x = torch.randn(dummy_size, requires_grad=True)
