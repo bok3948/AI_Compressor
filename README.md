@@ -34,7 +34,7 @@ To run the compressor, follow these steps:
    - **data**: Provide the path to the dataset (required for Mode 1).
 
 ## Results
-The compressor has been tested with various models, including MobileNetV2, ResNet18, and DeiT. The results demonstrate a trade-off between latency, size, and accuracy, effectively balancing these metrics using different compression techniques.
+The compressor has been tested with various models, including MobileNetV2, ResNet18, and DeiT. The results demonstrate a trade-off between latency, size, and accuracy.
 
 ![Model Compression Results](./Images/resullt.png "Results Overview")
 
