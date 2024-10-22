@@ -25,13 +25,10 @@ To run the compressor, follow these steps:
    pip install -r requirements.txt
    ```
 
-3. Run the compressor in your desired mode:
+3. Run the compressor :
    ```sh
    python compressor.py --mode [0 or 1] --model [MODEL_NAME] --data [DATA_PATH] 
    ```
-   - **mode**: Choose either `0` or `1` depending on the availability of training data.
-   - **model**: Specify the model to be compressed (e.g., MobileNetV2, ResNet18, DeiT).
-   - **data**: Provide the path to the dataset (required for Mode 1).
 
 ## Results
 The compressor has been tested with various models, including MobileNetV2, ResNet18, and DeiT. The results demonstrate a trade-off between latency, size, and accuracy.
