@@ -2,6 +2,6 @@
 Neural Network Compressor with pruning, knowledge distillation and quantizaion.
 
 
-![Example Image](/Images/result.png "Result")
+![Example Image](/Images/resullt.png "Result")
 
 
