@@ -9,7 +9,7 @@ AI_Compressor is a tool for compressing neural network models using various tech
 - **Mode 0 (Post-training Setting)**: For scenarios where training data is not available and retraining is not feasible. Requires only a calibration dataset to achieve compression.
 - **Mode 1 (Training Available)**: Designed for scenarios where training data is available, allowing further model optimization through knowledge distillation and quantization-aware training (QAT).
 
-![Compression Modes](./Images/mode.png "Mode Overview")
+![Compression Modes](./Images/mode1.png "Mode Overview")
 
 ## How to Run
 To run the compressor, follow these steps:
