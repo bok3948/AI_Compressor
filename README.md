@@ -36,7 +36,7 @@ To run the compressor, follow these steps:
 ## Results
 The compressor has been tested with various models, including MobileNetV2, ResNet18, and DeiT. The results demonstrate a trade-off between latency, size, and accuracy, effectively balancing these metrics using different compression techniques.
 
-![Model Compression Results](./Images/result.png "Results Overview")
+![Model Compression Results](./Images/resullt.png "Results Overview")
 
 ## Reproduce
 - To run MobileNetV2 compression in post-training mode:
