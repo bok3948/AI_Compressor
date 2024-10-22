@@ -122,14 +122,14 @@ def main(args):
     if args.mode == 0:
         #Prune
         print(f"="*20 + "Pruning" + "="*20)
-        prune_model = St_Prune(model, dummy_size, device, args)
+        pruned_model = St_Prune(model, dummy_size, device, args)
         print(f"-"*20 + "Benchmarking pruned model" + "-"*20)
         pruned_stats = Benchmark("torch", pruned_model, None, data_loader_val, dummy_size, device, args)
         torch.save(pruned_model, f"./{args.model}_pruned.pth")
 
         #Quantization
         print(f"="*20 + "Quantization(PTQ)" + "="*20)
-        onnx_path = torch_onnx_convert(prune_model.to("cpu"), args.model, dummy_size)
+        onnx_path = torch_onnx_convert(pruned_model.to("cpu"), args.model, dummy_size)
         compress_path = ONNX_PTQ(onnx_path, calib_loader)
 
     elif args.mode == 1:
