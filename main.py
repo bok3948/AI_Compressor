@@ -115,6 +115,7 @@ def main(args):
 
     ori_model = copy.deepcopy(model)
     ori_model = ori_model.to(device)
+    save_args = vars(args)
 
     #pruning
     dummy_size = (1, 3, args.input_size, args.input_size)
@@ -156,7 +157,7 @@ def main(args):
         "ori_model": ori_stats,
         "pruned_model": pruned_stats,
         "compressed_model": com_stats,
-        "args": vars(args)
+        "args": save_args
     }
 
     json.dump(results, open("./results.json", "w"), indent=4)
