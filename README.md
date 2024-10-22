@@ -27,7 +27,7 @@ To run the compressor, follow these steps:
 
 3. Run the compressor :
    ```sh
-   python compressor.py --mode [0 or 1] --model [MODEL_NAME] --data [DATA_PATH] 
+   python main.py --device cuda --mode 1 --data-set CIFAR --data_path ./ --model mobilenetv2_x1_0 --pretrained ./cifar100_mobilenetv2_x1_0.pt 
    ```
    #available model list: resnet, deit(from timm), mobilenetv2 (other model may be not compatible with this code) Most of CNN model is okay but transoformer need to change forward function 
 
