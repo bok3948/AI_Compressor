@@ -2,7 +2,7 @@
 Neural Network Compressor with pruning, knowledge distillation and quantizaion.
 
 
-![Example Image](/images/latency.png "Latency Reduction")
-![Example Image](/images/size.png "Size Reduction")
-![Example Image](/images/performance.png "Little Performance Loss")
+![Example Image](/Images/latency.png "Latency Reduction")
+![Example Image](/Images/size.png "Size Reduction")
+![Example Image](/Images/performance.png "Little Performance Loss")
 
