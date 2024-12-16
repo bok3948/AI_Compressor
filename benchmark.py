@@ -12,9 +12,17 @@ def Benchmark(model_type, model, model_path, data_loader_val, dummy_size, device
         summary.update(torch_stats)
     
     elif model_type == "onnx":
+        from onnx_inference import ONNX_inference
         onnx_stats = ONNX_inference(data_loader_val, model_path, args)
         summary = pf.summary(None, model_path, device, args.model)
         summary.update(onnx_stats)
+
+    elif model_type == "executorch":
+        from extorch_inference import ExTorch_inference
+        et_stats = ExTorch_inference(data_loader_val, model_path, args)
+        summary = pf.summary(None, model_path, device, args.model)
+        summary.update(et_stats)
+
     else:
         raise ValueError("Model type not supported")
     

@@ -1,6 +1,8 @@
 """
 profile the model 
 """
+import subprocess
+import re
 import os
 import time
 import numpy as np
@@ -56,6 +58,14 @@ class profiler(object):
         total /= runs
         return round(total, 4)
     
+    def extorch_model_latency(self, model_path):
+        output = subprocess.check_output(["./extorch_latency_checker", model_path])
+        output_str = output.decode("utf-8").strip()
+        
+        match = re.search(r"Average Latency:\s*([0-9.]+)\s*ms", output_str)
+        latency = float(match.group(1))
+        return round(latency, 4)
+    
     def model_size(self, model_path):
         size = os.path.getsize(model_path) / 1e6  # 파일 크기를 바이트에서 MB로 변환
         return size
@@ -78,6 +88,11 @@ class profiler(object):
         elif self.model_type == "onnx":
             summary_dict["name"] = f"onnx_{name}"
             summary_dict["latency(ms)"] = self.onnx_model_latency(model_path)
+            summary_dict["size(mb)"] = self.model_size(model_path)
+        
+        elif self.model_type == "executorch":
+            summary_dict["name"] = f"executorch_{name}"
+            summary_dict["latency(ms)"] = self.extorch_model_latency(model_path)
             summary_dict["size(mb)"] = self.model_size(model_path)
 
         else:

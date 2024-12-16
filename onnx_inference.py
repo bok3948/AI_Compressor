@@ -30,6 +30,7 @@ def ONNX_inference(onnx_loader_val, onnx_path, args):
 
         logits_np = ort_outs[0]
         logits_tensor = torch.from_numpy(logits_np)
+        logits_tensor = torch.nn.functional.softmax(logits_tensor, dim=1)
 
         acc1, acc5 = accuracy(logits_tensor, labels, topk=(1, 5))
 

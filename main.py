@@ -7,19 +7,20 @@ import torch
 
 from util.datasets import build_dataset, build_calib_loader, build_data_loader
 from util import get_model
-from util.converter import torch_onnx_convert
+from util.converter import torch_onnx_convert, ExTorch_converter
 
 from compress.structured_prune import St_Prune
 
 from compress.retrain import Retrain
 
 from compress.onnx_ptq import ONNX_PTQ
-from compress.qat import QAT
+from compress.qat import QAT, QAT_export
 from benchmark import Benchmark
 def get_args_parser():
     parser = argparse.ArgumentParser(description='AI Compression', add_help=False)
 
     parser.add_argument('--mode', default=1, choices=[0, 1], type=int, help='mode 0: post-training setting(pruning + PTQ) (NO retrain, No train data, with calibration dataset), mode 1: retraining setting(pruning + retraining + QAT) (retraining, with train dataset)')
+    parser.add_argument('--convert_option', default="executorch", choices=["onnx", "executorch"], help='using onnx or executorch for deployment')
 
     #setting
     parser.add_argument('--device_type', default='nvidia_gpu', choices=['default_cpu', 'nvidia_gpu', 'intel_cpu'], help='hardware acceleration for onnxruntime')
@@ -32,6 +33,7 @@ def get_args_parser():
     parser.add_argument('--eval-crop-ratio', default=0.875, type=float, help="Crop ratio for evaluation")
     parser.add_argument('--input-size', default=32, type=int, help='images input size')
     parser.add_argument('--batch_size', default=256, type=int, help='batch size for training')
+    parser.add_argument('--val_batch_size', default=10, type=int, help='batch size for validation')
 
     #calibration
     parser.add_argument('--num_samples', default=1000, type=int, help='size of the calibration dataset')
@@ -101,14 +103,14 @@ def main(args):
 
     #get training dataset
     dataset_train, args.nb_classes = build_dataset(is_train=True, args=args)
-    data_loader_train = build_data_loader(is_train=True, dataset=dataset_train, args=args)
+    data_loader_train = build_data_loader(is_train=True, dataset=dataset_train, batch_size=args.batch_size, args=args)
 
     #get calibraition dataloader
     calib_loader = build_calib_loader(dataset_train, num_samples=args.num_samples, seed=seed, args=args)
 
     #validation dataset 
     dataset_val, _ = build_dataset(is_train=False, args=args)
-    data_loader_val = build_data_loader(is_train=False, dataset=dataset_val, args=args)
+    data_loader_val = build_data_loader(is_train=False, dataset=dataset_val, batch_size=args.val_batch_size, args=args)
 
     model = get_model.get_torch_model(args.model, args)
     model = model.to(device)
@@ -145,15 +147,36 @@ def main(args):
 
         #Quantization
         print(f"="*20 + "Quantization" + "="*20)
-        compress_model = QAT(pruned_model, ori_model, data_loader_train, data_loader_val, criterion, device, dummy_size, args)
-        compress_path = torch_onnx_convert(compress_model.to("cpu"), args.model, dummy_size)
+
+        # quantization with fx graph mode + convet to onnx
+        if args.convert_option == "onnx": 
+            from util.converter import torch_onnx_convert
+            compress_model = QAT(pruned_model, ori_model, data_loader_train, data_loader_val, criterion, device, dummy_size, args)
+            compress_path = torch_onnx_convert(compress_model.to("cpu"), args.model, dummy_size)
+
+        elif args.convert_option == "executorch":
+            from util.converter import ExTorch_converter
+            compress_model = QAT_export(pruned_model, ori_model, data_loader_train, data_loader_val, criterion, device, dummy_size, args)
+            compress_path = f"./{args.model}_compress.pte"
+
+            dummy_inputs = (torch.randn(*dummy_size, dtype=torch.float).to("cpu"), )
+            compress_model = torch.export.export(compress_model, dummy_inputs)
+
+            ExTorch_converter(compress_model, dummy_size, compress_path)
+        else:
+            raise ValueError("Invalid convert option")
+
     
     # Benchmark
     print(f"-"*20 + "Benchmarking Original model" + "-"*20)
     ori_stats = Benchmark("torch", ori_model, None, data_loader_val, dummy_size, device, args)
 
     print(f"-"*20 + "Benchmarking Compressed model" + "-"*20)
-    com_stats = Benchmark("onnx", None, compress_path, data_loader_val, dummy_size, device, args)
+    if args.convert_option == "onnx": 
+        com_stats = Benchmark("onnx", None, compress_path, data_loader_val, dummy_size, device, args)
+    elif args.convert_option == "executorch":
+        data_loader_val = build_data_loader(is_train=False, dataset=dataset_val, batch_size=1, args=args)# only 1batch is allowed 
+        com_stats = Benchmark("executorch", None, compress_path, data_loader_val, dummy_size, device,  args)
     
     results= {
         "benchmark_setting": {"device": args.device, "input_size": dummy_size},

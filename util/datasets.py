@@ -144,13 +144,13 @@ def build_calib_loader(dataset=None, num_samples=1024, seed=0, args=None):
     return torch.utils.data.DataLoader(calib_set, batch_size=args.calib_batch_size, shuffle=False)
 
 
-def build_data_loader(is_train=True, dataset=None, args=None):
+def build_data_loader(is_train=True, dataset=None, batch_size=10, args=None):
 
     if is_train:
         train_sampler = torch.utils.data.RandomSampler(dataset)
         
         data_loader_train = torch.utils.data.DataLoader(
-            dataset, batch_size=args.batch_size, 
+            dataset, batch_size=batch_size, 
             num_workers=3,
             drop_last=True, sampler=train_sampler
         )
@@ -160,7 +160,7 @@ def build_data_loader(is_train=True, dataset=None, args=None):
         
         data_loader_val = torch.utils.data.DataLoader(
             dataset, sampler=sampler_val,
-            batch_size=10, 
+            batch_size=batch_size, 
             num_workers=3,
             drop_last=False
         )

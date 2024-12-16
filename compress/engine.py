@@ -21,7 +21,10 @@ def train_one_epoch(data_loader: Iterable, model: torch.nn.Module, optimizer: to
                 lr_scheduler=None, 
                 device=None, epoch=None,
                 log_writer=None, teacher=None, args=None):
-    model.train()
+    try:
+        model.train()
+    except:
+        torch.ao.quantization.move_exported_model_to_train(model)
     metric_logger = misc.MetricLogger(delimiter=" ")
     metric_logger.add_meter('lr', misc.SmoothedValue(window_size=1, fmt='{value:.6f}'))
     header = 'Epoch [{}]'.format(epoch)
@@ -68,12 +71,16 @@ def train_one_epoch(data_loader: Iterable, model: torch.nn.Module, optimizer: to
 
 @torch.no_grad()
 def evaluate(data_loader, model, device, args):
-    model.eval()
+    try:
+        model.eval()
+    except:
+        torch.ao.quantization.move_exported_model_to_eval(model)
+
 
     metric_logger = misc.MetricLogger(delimiter="\t")
     header = 'Test:'
 
-    for inputs, labels in metric_logger.log_every(data_loader, args.print_freq, header):
+    for inputs, labels in metric_logger.log_every(data_loader, int(len(data_loader)//2), header):
         inputs, labels = inputs.to(device, non_blocking=True), labels.to(device, non_blocking=True)
 
         if args.device == 'cuda':
@@ -81,7 +88,7 @@ def evaluate(data_loader, model, device, args):
                 logits = model(inputs)
         else:
             logits = model(inputs)
-
+        logits = torch.nn.functional.softmax(logits, dim=1)
         acc1, acc5 = accuracy(logits, labels, topk=(1, 5))
 
         batch_size = inputs.shape[0]
