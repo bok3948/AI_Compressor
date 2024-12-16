@@ -5,6 +5,10 @@ Neural Network Compressor with Pruning, Knowledge Distillation, and Quantization
 ## Overview
 AI_Compressor is a tool for compressing neural network models using various techniques, including pruning, knowledge distillation (KD), and quantization. It provides two modes of operation to accommodate different use cases, whether training data is available or not.
 
+## Update
+New Feature deploy with Executorch. 
+
+
 ### Modes of Operation
 - **Mode 0 (Post-training Setting)**: For scenarios where training data is not available and retraining is not feasible. Requires only a calibration dataset to achieve compression.
 - **Mode 1 (Training Available)**: Designed for scenarios where training data is available, allowing further model optimization through knowledge distillation and quantization-aware training (QAT).
